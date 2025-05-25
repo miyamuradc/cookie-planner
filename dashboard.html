@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cookie's Planner - Dashboard</title>
+  <title>Cookie's Planner</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="dashboard">
     <div class="topbar">
       <h2 id="greeting"></h2>
-      <button onclick="toggleMode()">🌓</button>
     </div>
 
     <div class="planner">
       <h3>🗓️ Daily Planner</h3>
-      <div id="schedule"></div>
+      <button class="add-task-btn" onclick="openTaskModal()">＋</button>
+      <div id="taskList"></div>
     </div>
 
     <div class="friends">
@@ -25,6 +25,22 @@
       <ul id="friendList"></ul>
     </div>
   </div>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" onclick="toggleMode()">🌓</button>
+
+  <!-- Modal -->
+  <div id="taskModal" class="modal">
+    <div class="modal-content">
+      <h3>Add New Task</h3>
+      <input type="text" id="taskName" placeholder="Task name" />
+      <input type="time" id="taskTime" />
+      <textarea id="taskDesc" placeholder="Description (optional)"></textarea>
+      <button onclick="saveTask()">Save Task</button>
+      <button onclick="closeTaskModal()">Cancel</button>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
