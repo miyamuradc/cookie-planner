@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cookie's Planner - Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="dashboard">
+    <div class="topbar">
+      <h2 id="greeting"></h2>
+      <button onclick="toggleMode()">🌓</button>
+    </div>
+
+    <div class="planner">
+      <h3>🗓️ Daily Planner</h3>
+      <div id="schedule"></div>
+    </div>
+
+    <div class="friends">
+      <h3>👥 Friends</h3>
+      <input type="text" id="friendName" placeholder="Add friend by username" />
+      <button onclick="addFriend()">Add</button>
+      <ul id="friendList"></ul>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
