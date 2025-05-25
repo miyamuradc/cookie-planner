@@ -2,21 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cookie's Planner - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cookie's Planner - Login/Signup</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>🍪 Cookie's Planner</h1>
-    <div class="form-group">
-      <input type="text" id="username" placeholder="Username (min 3 chars)" />
-      <input type="password" id="password" placeholder="Password (min 6 chars)" />
+  <div class="auth-container">
+    <h2>Cookie's Planner</h2>
+
+    <div class="form-container" id="loginForm">
+      <h3>Login</h3>
+      <input type="text" id="loginUsername" placeholder="Username" />
+      <input type="password" id="loginPassword" placeholder="Password" />
       <button onclick="login()">Login</button>
+      <p>Don't have an account? <a href="#" onclick="showSignup()">Signup here</a></p>
+    </div>
+
+    <div class="form-container hidden" id="signupForm">
+      <h3>Signup</h3>
+      <input type="text" id="signupUsername" placeholder="Username (min 3 chars)" />
+      <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" />
       <button onclick="signup()">Signup</button>
-      <p id="message"></p>
+      <p>Already have an account? <a href="#" onclick="showLogin()">Login here</a></p>
     </div>
   </div>
-  <script src="script.js"></script>
+
+  <script>
+    function showSignup() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('signupForm').classList.remove('hidden');
+    }
+    function showLogin() {
+      document.getElementById('signupForm').classList.add('hidden');
+      document.getElementById('loginForm').classList.remove('hidden');
+    }
+
+    function signup() {
+      const username = document.getElementById('signupUsername').value.trim();
+      const password = document.getElementById('signupPassword').value.trim();
+
+      if (username.length < 3) return alert('Username must be at least 3 characters.');
+      if (password.length < 6) return alert('Password must be at least 6 characters.');
+
+      let users = JSON.parse(localStorage.getItem('users') || '{}');
+      if (users[username]) return alert('Username already exists.');
+
+      users[username] = { password };
+      localStorage.setItem('users', JSON.stringify(users));
+      alert('Signup successful! Please login.');
+      showLogin();
+    }
+
+    function login() {
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      let users = JSON.parse(localStorage.getItem('users') || '{}');
+      if (!users[username] || users[username].password !== password) {
+        return alert('Invalid username or password.');
+      }
+
+      localStorage.setItem('loggedInUser', username);
+      window.location.href = 'dashboard.html';
+    }
+  </script>
 </body>
 </html>
