@@ -1,95 +1,96 @@
-// Auth Logic
-function signup() {
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-  if (username.length < 3 || password.length < 6) {
-    return showMessage("Username must be ≥ 3 chars and password ≥ 6 chars.");
-  }
-  const users = JSON.parse(localStorage.getItem('users') || '{}');
-  if (users[username]) return showMessage("Username already taken.");
-  users[username] = { password, friends: [] };
-  localStorage.setItem('users', JSON.stringify(users));
-  showMessage("Signup successful! You can now log in.");
+function toggleMode() {
+  const body = document.body;
+  body.classList.toggle('dark-mode');
+  localStorage.setItem('mode', body.classList.contains('dark-mode') ? 'dark' : 'light');
 }
 
-function login() {
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const users = JSON.parse(localStorage.getItem('users') || '{}');
-  if (users[username]?.password === password) {
-    localStorage.setItem('loggedInUser', username);
-    window.location.href = 'dashboard.html';
+function setTheme(mode) {
+  if (mode === 'dark') {
+    document.body.classList.add('dark-mode');
   } else {
-    showMessage("Invalid username or password.");
+    document.body.classList.remove('dark-mode');
   }
 }
 
-function showMessage(msg) {
-  document.getElementById('message').innerText = msg;
+function addFriend() {
+  const friendName = document.getElementById('friendName').value.trim();
+  if (friendName.length < 3) return alert("Username must be at least 3 characters.");
+  const user = localStorage.getItem('loggedInUser');
+  let friends = JSON.parse(localStorage.getItem('friends') || '{}');
+  friends[user] = friends[user] || [];
+  if (!friends[user].includes(friendName)) {
+    friends[user].push(friendName);
+  }
+  localStorage.setItem('friends', JSON.stringify(friends));
+  loadFriends(user);
+  document.getElementById('friendName').value = '';
 }
 
-// Dashboard Logic
+function loadFriends(user) {
+  const list = document.getElementById('friendList');
+  list.innerHTML = '';
+  const friends = JSON.parse(localStorage.getItem('friends') || '{}');
+  (friends[user] || []).forEach(name => {
+    const li = document.createElement('li');
+    li.innerText = name;
+    list.appendChild(li);
+  });
+}
+
+// Modal controls
+function openTaskModal() {
+  document.getElementById('taskModal').style.display = 'flex';
+}
+
+function closeTaskModal() {
+  document.getElementById('taskModal').style.display = 'none';
+  document.getElementById('taskName').value = '';
+  document.getElementById('taskTime').value = '';
+  document.getElementById('taskDesc').value = '';
+}
+
+// Save task to localStorage
+function saveTask() {
+  const name = document.getElementById('taskName').value.trim();
+  const time = document.getElementById('taskTime').value;
+  const desc = document.getElementById('taskDesc').value.trim();
+  if (!name || !time) return alert("Task name and time required!");
+
+  const user = localStorage.getItem('loggedInUser');
+  const tasks = JSON.parse(localStorage.getItem('tasks') || '{}');
+  tasks[user] = tasks[user] || [];
+  tasks[user].push({ name, time, desc });
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+  closeTaskModal();
+  loadTasks();
+}
+
+// Display task list
+function loadTasks() {
+  const user = localStorage.getItem('loggedInUser');
+  const tasks = JSON.parse(localStorage.getItem('tasks') || '{}');
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+
+  if (!tasks[user]) return;
+
+  tasks[user].sort((a, b) => a.time.localeCompare(b.time));
+  tasks[user].forEach(task => {
+    const div = document.createElement('div');
+    div.className = 'task-item';
+    div.innerHTML = `<strong>${task.time} - ${task.name}</strong><br>${task.desc || ''}`;
+    list.appendChild(div);
+  });
+}
+
 window.onload = function () {
   const page = window.location.pathname;
   if (page.includes('dashboard.html')) {
     const user = localStorage.getItem('loggedInUser');
     if (!user) return (window.location.href = 'index.html');
     document.getElementById('greeting').innerText = `Hello, ${user}!`;
-    loadPlanner(user);
+    loadTasks();
     loadFriends(user);
     setTheme(localStorage.getItem('mode') || 'light');
   }
 };
-
-function loadPlanner(user) {
-  const scheduleDiv = document.getElementById('schedule');
-  const hours = Array.from({ length: 12 }, (_, i) => `${8 + i}:00`);
-  const planner = JSON.parse(localStorage.getItem('planner') || '{}');
-  hours.forEach(hour => {
-    const textarea = document.createElement('textarea');
-    textarea.placeholder = `What to do at ${hour}?`;
-    textarea.value = planner[user]?.[hour] || '';
-    textarea.onchange = () => {
-      planner[user] = planner[user] || {};
-      planner[user][hour] = textarea.value;
-      localStorage.setItem('planner', JSON.stringify(planner));
-    };
-    scheduleDiv.appendChild(textarea);
-  });
-}
-
-function toggleMode() {
-  const current = document.body.classList.contains('dark') ? 'light' : 'dark';
-  setTheme(current);
-}
-
-function setTheme(mode) {
-  if (mode === 'dark') document.body.classList.add('dark');
-  else document.body.classList.remove('dark');
-  localStorage.setItem('mode', mode);
-}
-
-// Friend System
-function addFriend() {
-  const friend = document.getElementById('friendName').value.trim();
-  const user = localStorage.getItem('loggedInUser');
-  if (!friend || friend === user) return;
-  const users = JSON.parse(localStorage.getItem('users') || '{}');
-  if (!users[friend]) return alert("User not found.");
-  if (!users[user].friends.includes(friend)) {
-    users[user].friends.push(friend);
-    localStorage.setItem('users', JSON.stringify(users));
-    loadFriends(user);
-  }
-}
-
-function loadFriends(user) {
-  const list = document.getElementById('friendList');
-  list.innerHTML = '';
-  const users = JSON.parse(localStorage.getItem('users') || '{}');
-  (users[user].friends || []).forEach(friend => {
-    const li = document.createElement('li');
-    li.textContent = friend;
-    list.appendChild(li);
-  });
-}
