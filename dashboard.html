@@ -3,43 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cookie's Planner - Dashboard</title>
+  <title>Cookie’s Planner - Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="dashboard">
-    <div class="topbar">
-      <h2 id="greeting"></h2>
-      <button onclick="logout()" class="logout-btn">Logout</button>
-    </div>
+  <div class="dashboard-container">
+    <header>
+      <h1 id="greeting">Hello, User!</h1>
+      <button id="logoutBtn" onclick="logout()">Logout</button>
+    </header>
 
-    <div class="planner">
-      <h3>🗓️ Daily Planner</h3>
-      <button class="add-task-btn" onclick="openTaskModal()">＋</button>
+    <section id="tasksSection">
+      <h2>Daily Tasks</h2>
       <div id="taskList"></div>
-    </div>
+      <button id="addTaskBtn" title="Add Task">+</button>
 
-    <div class="friends">
-      <h3>👥 Friends</h3>
+      <!-- Hidden by default -->
+      <div id="addTaskDialog" class="hidden">
+        <h3>Add New Task</h3>
+        <input type="text" id="taskName" placeholder="Task Name" required />
+        <input type="time" id="taskTime" required />
+        <textarea id="taskDesc" placeholder="Description (optional)"></textarea>
+        <div class="dialog-buttons">
+          <button onclick="submitTask()">Add</button>
+          <button onclick="closeTaskDialog()">Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="friendsSection">
+      <h2>Friends</h2>
       <input type="text" id="friendName" placeholder="Add friend by username" />
-      <button onclick="addFriend()">Add</button>
+      <button onclick="addFriend()">Add Friend</button>
       <ul id="friendList"></ul>
-    </div>
-  </div>
+    </section>
 
-  <!-- Theme Toggle -->
-  <button class="theme-toggle" onclick="toggleMode()">🌓</button>
-
-  <!-- Modal -->
-  <div id="taskModal" class="modal">
-    <div class="modal-content">
-      <h3>Add New Task</h3>
-      <input type="text" id="taskName" placeholder="Task name" />
-      <input type="time" id="taskTime" />
-      <textarea id="taskDesc" placeholder="Description (optional)"></textarea>
-      <button onclick="saveTask()">Save Task</button>
-      <button onclick="closeTaskModal()">Cancel</button>
-    </div>
+    <button id="themeToggle" title="Toggle Dark/Light Mode">🌓</button>
   </div>
 
   <script src="script.js"></script>
