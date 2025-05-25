@@ -1,30 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cookie’s Planner - Login / Signup</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cookie’s Planner</title>
+<style>
+  /* Reset & base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Theme variables */
+  :root {
+    --bg: #f0f0f3;
+    --text: #333;
+    --primary: #5a9bd5;
+    --accent: #ff6f61;
+    --input-bg: #fff;
+    --input-border: #ccc;
+    --shadow: rgba(0,0,0,0.1);
+  }
+  body.dark {
+    --bg: #121212;
+    --text: #eee;
+    --primary: #6ca0dc;
+    --accent: #ff6f61;
+    --input-bg: #222;
+    --input-border: #444;
+    --shadow: rgba(0,0,0,0.7);
+  }
+
+  /* Container */
+  #app {
+    max-width: 600px;
+    width: 95%;
+    padding: 1.5rem 1rem 4rem;
+    margin-top: 2rem;
+    box-shadow: 0 4px 15px var(--shadow);
+    border-radius: 1rem;
+    background: var(--bg);
+  }
+
+  /* Greeting */
+  #greeting {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  /* Schedule Section */
+  #schedule {
+    margin-top: 1rem;
+  }
+
+  #task-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+  }
+
+  #task-list li {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    padding: 10px 15px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 5px var(--shadow);
+  }
+
+  /* Add Task Button */
+  #add-task-btn {
+    font-size: 2.4rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 54px;
+    height: 54px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px var(--shadow);
+    transition: background-color 0.3s ease;
+  }
+  #add-task-btn:hover {
+    background-color: var(--accent);
+  }
+
+  /* Add Task Dialog */
+  #add-task-dialog {
+    display: none;
+    background: var(--input-bg);
+    box-shadow: 0 6px 15px var(--shadow);
+    padding: 1rem;
+    border-radius: 1rem;
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 280px;
+    z-index: 1000;
+  }
+  #add-task-dialog.active {
+    display: block;
+  }
+  #add-task-dialog label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  #add-task-dialog input[type="text"],
+  #add-task-dialog input[type="time"],
+  #add-task-dialog textarea {
+    width: 100%;
+    padding: 7px 8px;
+    margin-bottom: 1rem;
+    border: 1.5px solid var(--input-border);
+    border-radius: 10px;
+    background: var(--input-bg);
+    color: var(--text);
+    font-size: 1rem;
+    resize: vertical;
+  }
+  #add-task-dialog textarea {
+    height: 60px;
+  }
+  #add-task-dialog button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+  #add-task-dialog button:hover {
+    background-color: var(--accent);
+  }
+
+  /* Theme Toggle Button */
+  #theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary);
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px var(--shadow);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    z-index: 1100;
+  }
+  #theme-toggle:hover {
+    background: var(--accent);
+  }
+
+  /* Centering Add Task Button below task list */
+  .btn-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Cookie’s Planner</h1>
-    <div class="form-container">
-      <div id="signup">
-        <h2>Sign Up</h2>
-        <input type="text" id="signupUsername" placeholder="Username (min 3 chars)" />
-        <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" />
-        <button onclick="signup()">Sign Up</button>
-      </div>
-      <div id="login">
-        <h2>Login</h2>
-        <input type="text" id="loginUsername" placeholder="Username" />
-        <input type="password" id="loginPassword" placeholder="Password" />
-        <button onclick="login()">Login</button>
-      </div>
-    </div>
+<div id="app">
+  <div id="greeting">Hello, User!</div>
+
+  <ul id="task-list"></ul>
+
+  <div class="btn-container">
+    <button id="add-task-btn" title="Add Task">+</button>
   </div>
 
-  <script src="script.js"></script>
+  <div id="add-task-dialog">
+    <form id="add-task-form">
+      <label for="task-name">Task Name *</label>
+      <input type="text" id="task-name" name="task-name" required minlength="1" placeholder="Enter task name" />
+      
+      <label for="task-time">Time *</label>
+      <input type="time" id="task-time" name="task-time" required />
+
+      <label for="task-desc">Description (optional)</label>
+      <textarea id="task-desc" name="task-desc" placeholder="Task details..."></textarea>
+
+      <button type="submit">Add</button>
+    </form>
+  </div>
+</div>
+
+<button id="theme-toggle" title="Toggle Theme">🌓</button>
+
+<script>
+  // Greet user (this would come from logged-in username)
+  let username = localStorage.getItem('username') || 'User';
+  document.getElementById('greeting').textContent = `Hello, ${username}!`;
+
+  // Theme toggle logic
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  function setTheme(theme) {
+    if(theme === 'dark') {
+      document.body.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }
+  // On load set theme from localStorage
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  setTheme(savedTheme);
+
+  themeToggleBtn.addEventListener('click', () => {
+    const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  });
+
+  // Task list and add task dialog logic
+  const addTaskBtn = document.getElementById('add-task-btn');
+  const addTaskDialog = document.getElementById('add-task-dialog');
+  const addTaskForm = document.getElementById('add-task-form');
+  const taskList = document.getElementById('task-list');
+
+  // Toggle add task dialog on + button click
+  addTaskBtn.addEventListener('click', () => {
+    addTaskDialog.classList.toggle('active');
+  });
+
+  // Close dialog when clicking outside (optional)
+  window.addEventListener('click', (e) => {
+    if (addTaskDialog.classList.contains('active') && !addTaskDialog.contains(e.target) && e.target !== addTaskBtn) {
+      addTaskDialog.classList.remove('active');
+    }
+  });
+
+  // Load saved tasks from localStorage
+  let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+
+  function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  function renderTasks() {
+    taskList.innerHTML = '';
+    if (tasks.length === 0) {
+      taskList.innerHTML = '<li style="color: var(--text); opacity: 0.6;">No tasks yet. Click + to add one.</li>';
+      return;
+    }
+    tasks.forEach((task, index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${task.name}</strong> <em>${task.time}</em><br/>${task.desc ? task.desc : ''}`;
+      taskList.appendChild(li);
+    });
+  }
+
+  renderTasks();
+
+  // Handle add task form submit
+  addTaskForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = addTaskForm['task-name'].value.trim();
+    const time = addTaskForm['task-time'].value;
+    const desc = addTaskForm['task-desc'].value.trim();
+
+    if (name && time) {
+      tasks.push({ name, time, desc });
+      saveTasks();
+      renderTasks();
+      addTaskForm.reset();
+      addTaskDialog.classList.remove('active');
+    }
+  });
+
+</script>
 </body>
 </html>
